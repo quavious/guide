@@ -1,0 +1,76 @@
+---
+id: 'i8PIHPIMDXmyDZSoB_l30'
+title: 'Yarn PnP 프로젝트에 Prisma ORM 붙이는 방법'
+description: 'Yarn Plug n play가 적용된 프로젝트에서 Prisma를 사용하는 방법을 알아봤습니다.'
+createdAt: '2022-07-25T14:21:06.713Z'
+updatedAt:
+author: 'nw.lee'
+draft: true
+tags:
+  [
+    'YARN',
+    'PLUG N PLAY',
+    'PNP',
+    'NODE MODULES',
+    '노드 모듈',
+    '프리즈마',
+    'ORM',
+    '타입스크립트',
+    '패키지 매니저',
+  ]
+---
+
+## Yarn PnP
+
+내 블로그는 Next.js에 Yarn PnP 설정이 되어있다. 기존 노드JS의 모듈 관리 방식의 단점을 극복하기 위함이었다.
+
+- 기존 노드 모듈에서 모듈을 탐색하는 방식은 비효율적이다. 패키지를 찾기 위해 상위 폴더에 존재하는 node_modules 폴더를 계속 탐색한다. 비효율적인 파일 입출력 호출을 유발할 수 있다. 프로젝트의 용량도 커지게 된다.
+- node_modules 폴더를 구성하는 행위부터 많은 IO 작업을 발생시켜야 한다. 패키지 설치 시간이 오래 걸린다.
+- 노드JS에는 패키지라는 개념이 없기 때문에 모듈을 사용하기 위해 어떤 파일에 접근해야 하는지 모른다. 환경에 따라서 패키지를 찾지 못하는 문제가 발생한다.
+- 중복되는 패키지 설치를 방지하기 위해 의존성 트리 구조에 있는 패키지의 위치를 트리 상단으로 올리는 호이스팅 방식을 사용한다. 이는 직접 설치하지 않은 패키지를 사용할 수 있게 만들고 패키지 관리도 어려워진다.
+
+Yarn 플러그 앤 플레이 방식에서는 node_modules 폴더 구조를 사용하지 않고 `.pnp.cjs` 파일에 모듈마다 모듈 이름, 버전, 디스크 상의 경로, 모듈이 의존하는 또 다른 모듈과 같이 모듈을 찾을 수 있는 정보가 저장된다.
+
+설치된 라이브러리는 `.yarn/cache` 폴더에 압축파일 형태(ZipFS)로 관리된다. Yarn은 압축파일에 접근하기 위해 노드JS의 `fs` 모듈에 자동으로 패치를 적용한다.
+
+automatically patches Node's fs module to add support for accessing files inside Zip archives. Thi
+
+플러그 앤 플레이의 이점은 다음과 같다.
+
+- Yarn은 노드JS에게 찾아야 하는 모듈이 어디 있는지 쉽게 알려줄 수 있다.
+- 어플리케이션 실행이 빨라진다. 모듈을 찾기 위해 수많은 파일 시스템 탐색 작업을 하지 않아도 된다.
+- `Zero install` 기능을 사용하면 의존성도 Git으로 관리할 수 있다. `yarn install`로 패키지를 설치할 필요가 없다.
+- 각 모듈은 `pnp.cjs`에 작성된 의존성만 참조하기 때문에 예상하지 못한 모듈에 접근하는 것을 방지하여 코드를 더 안전하게 작성할 수 있다.
+
+VSCode로 작업하는 경우 압축파일에서 파일을 읽을 수 있도록 ZipFS 확장을 설치해준다. 타입스크립트와 같이 쓰기 위해서는 다음과 같은 명령어를 실행시켜야 한다.
+
+```
+yarn plugin import typescript
+yarn dlx @yarnpkg/sdks vscode
+```
+
+만약 어떤 타입스크립트 버전을 선택할 것이냐는 메시지 창이 뜨면 Workspace version 버튼을 눌러 해당 프로젝트에 설치된 타입스크립트 버전을 사용할 것이라고 알려준다.
+
+## 프리즈마 ORM
+
+Yarn PnP가 적용된 프로젝트에서 프리즈마 ORM을 사용하려는데 타입 추론을 하지 못하는 문제가 있었다. 프리즈마는 데이터베이스 테이블 스키마 파일에 대해 타입스크립트 클라이언트 파일을 node_modules 내 .prisma 폴더에 생성한다.
+
+node_modules 폴더에서 모듈을 불러올 수 있게 하려면 우선 .yarnrc.yml 파일부터 수정해줘야 한다.
+
+```yml
+nodeLinker: node-modules
+
+plugins:
+  - path: .yarn/plugins/@yarnpkg/plugin-typescript.cjs
+    spec: '@yarnpkg/plugin-typescript'
+
+yarnPath: .yarn/releases/yarn-3.2.1.cjs
+```
+
+그리고 다음과 같은 명령어를 실행하여 두 패키지가 PnP 방식으로 설치되지 않도록 한다.
+
+```powershell
+yarn unplug prisma @prisma/client
+```
+
+패키지는 npm의 기존 모듈 관리 방식대로 node_modules 폴더에 설치된다. generate 명령어를 실행하면 node_modules 폴더 내 prisma 디렉터리에서 프리즈마 클라이언트 파일을 불러올 수 있다.

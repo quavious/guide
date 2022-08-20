@@ -1,0 +1,20 @@
+---
+id: 'G39e1p-0lV3IB_5oHdo-H'
+title: 'Next.js public 폴더 내 정적 파일 제공 방식'
+description: 'Next.js 프로젝트 내 정적 파일을 제공할 때 유의해야 할 점이 있었습니다.'
+createdAt: '2022-08-02T13:58:40.501Z'
+updatedAt:
+author: 'nw.lee'
+draft: false
+tags: ['NEXTJS', 'PUBLIC', '정적 파일', '빌드']
+---
+
+## 정적 파일 제공 방식
+
+지난 번에 Next.js와 formidable로 서버 라이브러리 없이 파일 업로드하는 방법을 작성했다. 개발 모드에서는 public 폴더에 파일 업로드도 되고 파일에 접근도 가능했다. 그런데 빌드하고 나서 Next 서버를 실행했을 땐 파일 업로드 후 접근이 불가능했다.
+
+[**Static File Serving**](https://nextjs.org/docs/basic-features/static-file-serving)
+
+Next.js 공식문서에서는 public 폴더 내 정적 파일은 빌드 시점에서 존재했던 파일만 접근 가능하다고 적혀있다. 즉 빌드 후 런타임에서 업로드된 파일은 접근할 수 없다. 공식문서에서도 S3와 같은 영구적인 파일 저장 서비스를 사용할 것을 권장하고 있다.
+
+Next.js API 엔드포인트를 경유해서 S3 저장소로 파일을 업로드하는 건 가능할 것 같다. 그 외에도 [S3 Presigned URL](https://docs.aws.amazon.com/AmazonS3/latest/userguide/ShareObjectPreSignedURL.html)도 사용할 수 있을 것이다. S3의 미리 서명된 웹 주소는 저장소에 접근할 수 있는 유효 기간을 개발자가 따로 설정할 수 있다.

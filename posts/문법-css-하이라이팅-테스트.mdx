@@ -1,0 +1,63 @@
+---
+id: 'VuP0WE_-rwLEHj-g8nvhx'
+title: '문법 CSS 하이라이팅 테스트'
+description: '블로그 게시물에서 문법 표시가 잘 되는지 확인하는 게시물입니다.'
+createdAt: '2022-07-17T10:18:35.082Z'
+updatedAt:
+author: 'nw.lee'
+draft: true
+tags: ['CSS', '문법', '마크다운', 'PRISMJS', '블로그', '코틀린']
+---
+
+## 문법 CSS 적용
+
+기쁘며, 없으면 만천하의 우리 고행을 전인 그들의 설레는 힘있다. 얼마나 이상은 기관과 꽃이 있다. 미인을 동산에는 하였으며, 때까지 그것을 가슴이 봄날의 청춘이 우는 것이다. 길지 온갖 안고, 있음으로써 튼튼하며, 심장은 뼈 현저하게 피고, 것이다. 목숨이 청춘의 역사를 황금시대다. 돋고, 그들은 보는 뜨거운지라, 피가 따뜻한 눈이 위하여서 거선의 것이다. 일월과 튼튼하며, 얼마나 불어 것은 열락의 같은 것이다. 불어 전인 쓸쓸한 그들은 인도하겠다는 끝까지 있으랴? 몸이 끓는 목숨이 지혜는 같은 봄바람을 것이 있다. 내는 피고, 동력은 눈에 이상의 힘차게 것이다.
+
+## 코드 예시
+
+```kotlin[class="line-numbers"]
+class Person {
+  val name: String
+  val age: Int
+  val home: String
+
+  companion object {
+    fun new(name: String, age: Int, home: String) {
+      println("New person")
+      return Person(name, age, home)
+    }
+  }
+}
+```
+
+```go[class="line-numbers"]
+func main() {
+  resp, err := http.Get("https://127.0.0.1:3000")
+  if err != nil {
+    panic(err)
+  }
+  buf, err := io.ReadAll(resp.body)
+  if err != nil {
+    fmt.Printf("Reading body error: %s", err.Error())
+    return
+  }
+  fmt.Println(string(buf))
+}
+```
+
+```tsx[class="line-numbers"]
+const Page: NextPage<{}> = (props) => {
+  const [counter, setCounter] = useState(0);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCounter(counter + 1);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [counter]);
+  return (
+    <div>
+      <h1>Hello TSX!</h1>
+    </div>
+  );
+};
+```
