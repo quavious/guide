@@ -9,7 +9,7 @@ export default function PageHeader(props: PageHeaderProps) {
     <>
       <header>
         <h5 className="my-4 font-bold text-xl sm:text-2xl headerTitle">
-          <Link href={'/'}>Guide.</Link>
+          <Link href={'/'}>Blog.</Link>
         </h5>
         {props.children}
       </header>
