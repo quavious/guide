@@ -70,6 +70,11 @@ export const getStaticPaths: GetStaticPaths = async (context) => {
 const PostPage: NextPage<{ post: PostListModel & PostContent }> = (props) => {
   const components = {
     a: (props: any) => <LinkComponent {...props} />,
+    table: (props: any) => (
+      <div style={{ overflowX: 'scroll', width: '100%', whiteSpace: 'nowrap' }}>
+        <table {...props} />
+      </div>
+    ),
   };
   const { post } = props;
   if (!post) {

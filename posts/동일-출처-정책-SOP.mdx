@@ -33,8 +33,6 @@ SOP는 Same Origin Policy, 같은 출처의 자원만 가져오도록 하는 정
 
 예를 들어 `https://example.com`과 `https://example.com:8000`은 오리진이 다르다고 할 수 있다. 프로토콜, 도메인이 같지만 포트가 다르기 때문이다. https 프로토콜의 경우 일반적으로 443 포트를 사용한다.
 
-<div style="overflow-x: scroll; width: 100%; white-space: nowrap">
-
 | URL                                             | 결과   | 이유              |
 | ----------------------------------------------- | ------ | ----------------- |
 | http://store.example.com/dir/other.html         | 같다   | 경로만 다르다     |
@@ -42,8 +40,6 @@ SOP는 Same Origin Policy, 같은 출처의 자원만 가져오도록 하는 정
 | https://store.example.com/page.html             | 다르다 | 프로토콜이 다르다 |
 | http://store.example.com:81/dir/page.html       | 다르다 | 포트가 다르다     |
 | http://news.example.com/dir/page.html           | 다르다 | 도메인이 다르다   |
-
-</div>
 
 SOP는 하나의 오리진에 존재하는 문서나 스크립트가 다른 오리진과 상호작용하는 것을 차단해준다.
 
