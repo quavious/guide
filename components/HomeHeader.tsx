@@ -2,9 +2,9 @@ export default function HomeHeader() {
   return (
     <>
       <header>
-        <h1 className="text-4xl sm:text-6xl font-bold headerTitle">Guide.</h1>
+        <h1 className="text-4xl sm:text-6xl font-bold headerTitle">Blog.</h1>
         <h2 className="text-xl mt-4 font-semibold">
-          인터넷으로 수익 창출하고 싶은 사람들을 위한 가이드
+          새롭게 배운 프로그래밍 지식을 기록하기 위한 블로그입니다.
         </h2>
       </header>
       <style jsx>{`
