@@ -2,8 +2,6 @@ import * as fs from 'fs/promises';
 import matter from 'gray-matter';
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import path from 'path';
-import Link from 'next/link';
-import Head from 'next/head';
 import remarkGfm from 'remark-gfm';
 import remarkPrism from 'remark-prism';
 import remarkRehype from 'remark-rehype';
@@ -16,6 +14,8 @@ import PageHeader from '@components/PageHeader';
 import BackLink from '@components/BackLink';
 import LinkComponent from '@components/mdx/LinkComponent';
 import SEO from '@components/head/SEO';
+import Script from 'next/script';
+import { useEffect, useState } from 'react';
 
 export const getStaticProps: GetStaticProps = async (context) => {
   let slug = context.params?.slug;
@@ -78,6 +78,7 @@ const PostPage: NextPage<{ post: PostListModel & PostContent }> = (props) => {
     ),
   };
   const { post } = props;
+
   if (!post) {
     return (
       <div className="w-full flex justify-center pt-4">
@@ -114,11 +115,43 @@ const PostPage: NextPage<{ post: PostListModel & PostContent }> = (props) => {
         </article>
         <BackLink />
         <div className="w-full max-w-full h-1 bg-gray-200 my-4" />
+        <div className="disqusWrapper mb-16">
+          <div id="disqus_thread"></div>
+        </div>
+        <Script
+          id="disqus"
+          strategy="afterInteractive"
+          async={true}
+          dangerouslySetInnerHTML={{
+            __html: `
+              var disqus_config = function () {
+                this.page.url = "https://nwlee.com"; 
+                this.page.identifier = "p/${post.path}";
+              };
+              
+              (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://nw-lee.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+              })();`,
+          }}
+        />
+        <Script
+          id="dsq-count-scr"
+          src="//nw-lee.disqus.com/count.js"
+          async={true}
+          strategy="afterInteractive"
+        />
       </div>
       <style jsx>{`
         .thumbnail {
           max-width: 32rem;
           width: 100%;
+        }
+        .disqusWrapper {
+          padding: 1rem;
+          background-color: white;
         }
       `}</style>
     </>
