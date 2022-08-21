@@ -12,6 +12,7 @@ import { MDXRemote } from 'next-mdx-remote';
 import LinkComponent from '@components/mdx/LinkComponent';
 import PageHeader from '@components/PageHeader';
 import BackLink from '@components/BackLink';
+import SEO from '@components/head/SEO';
 
 export const getStaticProps: GetStaticProps = async (context) => {
   const filePath = path.join(process.cwd(), 'posts', '이력서.mdx');
@@ -50,6 +51,12 @@ const ResumePage: NextPage<{ post: PostListModel & PostContent }> = ({
   return (
     <>
       <div className="mx-auto w-full px-4 mb-12">
+        <SEO
+          title="이력서"
+          description="이노원 프론트엔드 개발자 이력서입니다."
+          url="me"
+          keyword={['이력서', '작업 사항', '프로젝트', '경력', '기술 스택']}
+        />
         <article className="prose prose-slate dark:prose-invert sm:prose-xl max-w-full mt-4">
           <MDXRemote {...post.content} components={components} />
         </article>

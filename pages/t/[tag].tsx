@@ -11,6 +11,7 @@ import PageHeader from '@components/PageHeader';
 import BackLink from '@components/BackLink';
 import PostTag from '@components/PostTag';
 import PostTagList from '@components/PostTagList';
+import SEO from '@components/head/SEO';
 
 export const getStaticProps: GetStaticProps = async (context) => {
   const tag = context.params?.tag;
@@ -98,6 +99,12 @@ const Page: NextPage<PageProps> = ({ posts, colorMap, tag }) => {
   return (
     <>
       <div className="m-4">
+        <SEO
+          title={`${tag} 태그`}
+          description={`${tag} 태그 게시물입니다.`}
+          url={`t/${tag}`}
+          keyword={[tag]}
+        />
         <PageHeader>
           <h6
             className="text-white px-2 text-2xl font-semibold py-1 mt-2 rounded inline-flex"

@@ -13,6 +13,7 @@ import SearchIcon from '@components/icons/Search';
 import PostTag from '@components/PostTag';
 import { colorMap } from '@utils/color';
 import PostTagList from '@components/PostTagList';
+import SEO from '@components/head/SEO';
 
 export const getStaticProps: GetStaticProps = async (context) => {
   const files = await fs.readdir(path.join(process.cwd(), 'posts'), {
@@ -65,6 +66,11 @@ const Page: NextPage<PageProps> = ({ posts, colorMap }) => {
   return (
     <>
       <div className="m-4">
+        <SEO
+          description="블로그 전체 포스트"
+          title="블로그 포스트"
+          url="posts"
+        />
         <PageHeader />
         <section className="mt-4">
           <form

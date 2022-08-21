@@ -12,6 +12,8 @@ import ViewListIcon from '@components/icons/ViewList';
 import { useRouter } from 'next/router';
 import PostTag from '@components/PostTag';
 import PostTagList from '@components/PostTagList';
+import Head from 'next/head';
+import SEO from '@components/head/SEO';
 
 export const getStaticProps: GetStaticProps = async (context) => {
   const files = await fs.readdir(path.join(process.cwd(), 'posts'), {
@@ -63,6 +65,7 @@ const Page: NextPage<PageProps> = ({ posts, colorMap }) => {
   return (
     <>
       <div className="m-4">
+        <SEO />
         <HomeHeader />
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 gap-y-12 mt-4">
           {posts.map((post, index) => (

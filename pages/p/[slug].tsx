@@ -15,6 +15,7 @@ import { serialize } from 'next-mdx-remote/serialize';
 import PageHeader from '@components/PageHeader';
 import BackLink from '@components/BackLink';
 import LinkComponent from '@components/mdx/LinkComponent';
+import SEO from '@components/head/SEO';
 
 export const getStaticProps: GetStaticProps = async (context) => {
   let slug = context.params?.slug;
@@ -87,6 +88,13 @@ const PostPage: NextPage<{ post: PostListModel & PostContent }> = (props) => {
   return (
     <>
       <div className="mx-auto w-full px-4">
+        <SEO
+          title={post.title}
+          description={post.description}
+          url={`p/${post.path}`}
+          keyword={post.tags}
+          image={post.image}
+        />
         <PageHeader />
         <h1 className="text-2xl sm:text-4xl font-bold">{post.title}</h1>
         <div className="mt-2 flex items-center">
