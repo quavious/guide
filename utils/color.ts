@@ -14,7 +14,11 @@ const getRandomColor = () => {
         const filtered = value === 128 ? 0 : value;
         return filtered.toString(16);
       })
-      .reduce((acc, val) => acc + (val.length === 1 ? `0${val}` : val))
+      .reduce(
+        (acc, val) =>
+          (acc.length === 1 ? `0${acc}` : acc) +
+          (val.length === 1 ? `0${val}` : val),
+      )
   );
 };
 

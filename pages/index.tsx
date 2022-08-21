@@ -30,9 +30,9 @@ export const getStaticProps: GetStaticProps = async (context) => {
   posts = posts
     .filter((post) => {
       if (process.env.NODE_ENV !== 'production') {
-        return true;
+        return post.path !== '이력서';
       }
-      return !post.draft;
+      return !post.draft && post.path !== '이력서';
     })
     .sort(
       (p, q) =>
