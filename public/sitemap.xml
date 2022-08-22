@@ -1,5 +1,4 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-		<!--	created with www.mysitemapgenerator.com	-->
 		<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
 	<loc>https://nwlee.com/</loc>
@@ -265,5 +264,15 @@
 	<loc>https://nwlee.com/posts</loc>
 	<lastmod>2022-08-21T13:51:30+01:00</lastmod>
 	<priority>0.2</priority>
+</url>
+<url>
+	<loc>https://nwlee.com/404</loc>
+	<lastmod>2022-08-21T13:51:30+01:00</lastmod>
+	<priority>0.1</priority>
+</url>
+<url>
+	<loc>https://nwlee.com/500</loc>
+	<lastmod>2022-08-21T13:51:30+01:00</lastmod>
+	<priority>0.1</priority>
 </url>
 </urlset>
