@@ -33,8 +33,6 @@ Yarn 플러그 앤 플레이 방식에서는 node_modules 폴더 구조를 사�
 
 설치된 라이브러리는 `.yarn/cache` 폴더에 압축파일 형태(ZipFS)로 관리된다. Yarn은 압축파일에 접근하기 위해 노드JS의 `fs` 모듈에 자동으로 패치를 적용한다.
 
-automatically patches Node's fs module to add support for accessing files inside Zip archives. Thi
-
 플러그 앤 플레이의 이점은 다음과 같다.
 
 - Yarn은 노드JS에게 찾아야 하는 모듈이 어디 있는지 쉽게 알려줄 수 있다.
