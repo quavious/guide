@@ -1,0 +1,42 @@
+---
+title: 'Parcel로 타입스크립트 파일 실행시키기'
+description: '외부 모듈을 사용하는 타입스크립트 파일을 자바스크립트로 변환한 뒤 실행시키는 과정을 적었습니다.'
+image: '/static/parcel.png'
+createdAt: '2022-08-21T06:14:45.741Z'
+updatedAt: ''
+tags: ['PARCEL', '타입스크립트', '모듈', '번들러', '노드JS']
+draft: false
+---
+
+## 문제
+
+타입스크립트로 브라우저 자동화와 관련된 작은 도구를 만들어야 할 일이 생겼다. 타입스크립트 파일을 tsc 명령어로 자바스크립트로 트랜스파일링한 뒤 node 명령어로 실행시키려고 했는데 에러가 발생했다.
+
+```powershell
+Error: Cannot find module 'puppeteer'
+```
+
+퍼펫티어(puppeteer) 외부 모듈을 설치해서 코드를 작성했는데 변환된 자바스크립트 파일을 실행할 때 노드JS에서 모듈을 찾지 못하는 것 같았다. 인터넷에도 비슷한 문제로 해결책을 찾는 사람들이 여럿 있었다.
+
+## 해결 방법
+
+노드JS는 13 버전부터 ES 모듈을 사용할 수 있다. 이때 자바스크립트 파일의 확장자가 `.js`가 아닌 `.mjs`여야 하고, `package.json` 파일에 `"type": "module"`이 작성되어 있어야 한다. tsc 명령어로 변환된 `.js` 파일에서 확장자만 바꿔 실행시켰을 때는 또 다른 에러가 발생했다.
+
+```powershell
+ReferenceError: exports is not defined in ES module scope
+```
+
+에러를 해결하는데 너무 많은 시간을 쏟을 거 같아서 타입스크립트에서 자바스크립트 모듈 파일로 한번에 바꿔주는 방법을 찾게 되었다. 그래서 Parcel 모듈 번들러를 사용했다.
+
+## Parcel
+
+Parcel은 Zero configuration, 별도의 설정이 필요하지 않은 웹 빌드 도구이다. `package.json`에서 source, main 속성을 명시해주면 된다. source는 빌드할 때 진입점(엔트리)이 되는 파일, main은 빌드 결과물 파일이라고 생각하면 될 듯하다.
+
+```json
+{
+  "source": "src/index.ts",
+  "main": "dist/index.mjs"
+}
+```
+
+src 폴더에 타입스크립트 코드를 작성하고 `npx parcel build`로 빌드룰 수행하면 dist 폴더에 `index.mjs` 파일이 생성된다. node 명령어로 해당 자바스크립트 모듈 파일을 실행했을 때 코드가 정상적으로 실행되는 점을 알 수 있었다. Parcel은 빌드할 때 타입 검사를 수행하지 않기 때문에 `tsc --noEmit` 명령어로 별도 타입 검사를 수행할 수 있다.
