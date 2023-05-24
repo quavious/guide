@@ -1,0 +1,121 @@
+---
+title: "`useSWR`이 캐시한 데이터를 가져오는 기준"
+description: "`useSWR`에서 캐시된 데이터를 불러오지 못하는 이유를 찾아봤습니다."
+image: "/static/swr.png"
+createdAt: "2023-05-21T06:36:06.003Z"
+updatedAt:
+author: "nw.lee"
+draft: false
+tags: ["useSWR", "Cache", "Map", "Set", "WeakMap"]
+---
+
+`useSWR`이 데이터 가져오기에 좋은 이유는 `key`의 요소가 같으면 추가적인 네트워크 요청 없이 캐시된 데이터를 반환해주기 때문이다. 네트워크 요청 횟수를 줄일 수 있는 이점이 있다.
+
+`key` 배열 내 요소가 업데이트되면 두 번째 매개변수로 주어진 콜백 함수가 실행되어 갱신된 데이터를 받아올 수 있다. `key` 배열에는 문자열, 숫자 같은 원시 타입 뿐만 아니라 객체 리터럴이나 배열 같은 참조 타입도 유효하다.
+
+```tsx
+const useUser = (userId: number) => {
+  const { data: user } = useSWR([userId], ([id]) => {
+    // 데이터 가져오기 로직
+  });
+
+  return user;
+};
+
+const User = () => {
+  const [userId, setUserId] = useState(100);
+  useUser(userId);
+  useUser(userId);
+  useUser(userId);
+};
+```
+
+`User` 컴포넌트에서는 `useUser` Hooks이 세 번 호출되지만 네트워크 요청은 한 번 이뤄진다. `useSWR` 훅이 `userId`에 대해서 데이터를 캐시하고 있기 때문에 추가적인 요청이 발생하지 않는 것이다. `setUserId` 함수 호출을 통해 `userId` 변수가 업데이트되었을 때가 되어야 네트워크 요청이 이뤄진다.
+
+다음과 같은 상황에서는 API가 여러 번 호출된다.
+
+```ts
+const useMapFetch = () => {
+  const map = new Map<string, string>();
+
+  useSWR([map], ([map]) => {
+    // 데이터 가져오기 로직
+  });
+};
+```
+
+`useSWR` 훅은 다음과 같이 불러올 수 있다. `export default` 형태로 모듈 선언이 되어있는 것을 확인할 수 있었다.
+
+```ts
+import useSWR from "swr";
+```
+
+깃허브 저장소를 접속해서 내부 소스 코드를 직접 확인해봤다. 모듈의 코어 부분을 찾아본 결과 `useSWR`은 다음과 같이 선언되어있었다.
+
+```ts
+// /core/use-swr.ts
+const useSWR = withArgs<SWRHook>(useSWRHandler);
+
+export default useSWR;
+```
+
+`useSWRHandler` 함수는 키(`_key`)와 데이터를 불러오는 함수(`fetcher`)를 매개변수로 받는다. 함수 내부에서 키는 `serialize` 함수에 매개변수로 전달되고 다시 `stableHash` 함수로 전달되어 문자열로 변환된다.
+
+`stableHash` 함수가 작성되어 있는 `/_internal/utils/hash.ts` 파일에서는 원본 키 배열과 변환된 문자열 쌍을 보관하는 위크맵(`WeakMap`) 객체가 하나 존재한다. 전달받은 키 배열에 대해 이미 매핑된 문자열이 있으면 문자열을 반환해준다.
+
+문자열을 변환하는 케이스는 다음과 같다.
+
+- 자바스크립트 날짜, 정규표현식, 심볼(Symbol) 객체가 있을 경우 해당 요소는 메소드 `toString`을 그대로 호출한다.
+- 자바스크립트 원시 타입도 그대로 문자열로 변환한다.
+- 객체 리터럴, 배열의 경우 내부적인 로직을 거쳐서 문자열로 변환된다.
+
+`Map`, `Set`, 또는 클래스의 인스턴스는 객체 리터럴이 아니기 때문에, 함수에 키 배열이 전달될 때마다 `counter` 숫자 변수를 하나씩 증가시켜 위크맵에 저장한다. 이 카운터 변수는 `useSWRHandler` 함수 외부에 선언되어 있다.
+
+### 객체가 객체 리터럴인 경우
+
+```tsx
+const useFetch = () => {
+  const fetchKey = [
+    {
+      key1: "Hello",
+      key2: "World",
+    },
+  ];
+  const { data } = useSWR([fetchKey], ([key]) => {
+    // 데이터 가져오는 로직
+  });
+};
+
+const Example = () => {
+  useFetch(); // fetchKey -> 직렬화된 같은 문자열
+  useFetch(); // fetchKey -> 직렬화된 같은 문자열
+  useFetch(); // fetchKey -> 직렬화된 같은 문자열
+};
+```
+
+### 객체가 객체 리터럴이 아닌 경우
+
+```tsx
+const useMapFetch = () => {
+  const map = new Map<string, unknown>();
+  const { data } = useSWR([map], ([map]) => {
+    // 데이터 가져오는 로직
+  });
+};
+
+const Example = () => {
+  useMapFetch(); // map -> 1~
+  useMapFetch(); // map -> 2~
+  useMapFetch(); // map -> 3~
+};
+```
+
+Hook이 여러 컴포넌트에서 호출되면 같은 요소가 있는 객체라도 내부적으로는 각각 다른 문자열로 매핑된다. 매핑된 문자열이 각각 다르기 때문에 네트워크 요청도 호출 횟수만큼 이뤄진다.
+
+즉 `useSWR`을 사용할 때 데이터를 캐시하고 싶으면 가급적 키 배열에는 원시 타입만 배치하는 것이 좋다.
+
+## 여담
+
+해쉬 함수는 다양한 길이를 가진 데이터를 고정된 길이를 가진 데이터로 매핑하는 함수이다. 반면 위에 설명된 `stableHash`는 객체 내 요소를 하나씩 순회한 뒤 특정한 방식으로 직렬화한다. 직렬화된 문자열의 길이도 달라질 수 밖에 없는데 본래 해쉬 함수의 정의와는 맞지 않은 것 같다.
+
+자바스크립트의 클래스, Map, Set 객체가 키 배열의 요소일 때 대해서는 따로 직렬화된 로직이 구성되어 있지 않았다. 같은 Map이나 Set이 주어졌을 때 대해서도 데이터 캐시를 보장할 수 있는 방법을 찾아보고 있다.
